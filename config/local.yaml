@@ -7,6 +7,10 @@ db:
   dbname: "T_invest_DB"
   sslmode: "disable"
 http_server:
-  addres: "localhost:8082"
+  address: "localhost:8086"
   timeout: 4s
   iddle_timeout: 60s
+gRPC_TInvest_server:
+  address: "invest-public-api.tinkoff.ru:443"
+  sandbox_address: "sandbox-invest-public-api.tinkoff.ru:443"
+  token: "t.r4ibl-R4MEoJacIQvXsT9T2G0Hz22huGeRWeAl-WZWRJoepyKCcgtxGP8EDwE0-PTsrtP-ZdMlHOi7BNhQyw-A"

@@ -11,8 +11,9 @@ import (
 type Config struct {
 	Env string `yaml:"env" env-default:"local" env-required:"true"`
 	// StoragePath string `yaml:"storage_path" env-required:"true"`
-	HTTPServer `yaml:"http_server"`
-	PostgresDB `yaml:"db"`
+	HTTPServer          `yaml:"http_server"`
+	PostgresDB          `yaml:"db"`
+	GRPC_TInvest_server `yaml:"gRPC_TInvest_server"`
 }
 
 type HTTPServer struct {
@@ -28,6 +29,12 @@ type PostgresDB struct {
 	Password string `yaml:"password"`
 	DBname   string `yaml:"dbname"`
 	SSLmode  string `yaml:"sslmode"`
+}
+
+type GRPC_TInvest_server struct {
+	Address  string `yaml:"address" env-default:"localhost:443"`
+	SAddress string `yaml:"sandbox_address" env-default:"localhost:443"`
+	Token    string `yaml:"token"`
 }
 
 func MustLoad() *Config {
