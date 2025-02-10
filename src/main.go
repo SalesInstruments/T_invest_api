@@ -5,11 +5,9 @@ import (
 	"T_invest_api/internal/http-server/handlers/url/bonds"
 	mvLoger "T_invest_api/internal/http-server/middleware/logger"
 	"T_invest_api/internal/logger"
-	"T_invest_api/internal/storage"
 	"net/http"
 
 	"log/slog"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,12 +23,12 @@ func main() {
 	log.Info("start T_invest_api", slog.String("env", cfg.Env))
 	log.Debug("debag messages are enable")
 
-	storage, err := storage.New()
-	if err != nil {
-		log.Error("failed to init storage", logger.Err(err))
-		os.Exit(1)
-	}
-	_ = storage
+	// storage, err := storage.New()
+	// if err != nil {
+	// 	log.Error("failed to init storage", logger.Err(err))
+	// 	os.Exit(1)
+	// }
+	// _ = storage
 
 	router := chi.NewRouter()
 
