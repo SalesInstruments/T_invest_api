@@ -38,10 +38,10 @@ type GRPC_TInvest_server struct {
 }
 
 func MustLoad() *Config {
-	configPath := os.Getenv("CONFIG_PATH")
+	configPath := os.Getenv("CONFIG_PATH_TInvest")
 	// configPath := "E:\\project\\T_invest_api\\config\\local.yaml"
 	if configPath == "" {
-		log.Fatal("CONFIG_PATH is not set")
+		log.Fatal("CONFIG_PATH_TInvest is not set")
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
