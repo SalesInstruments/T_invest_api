@@ -6,8 +6,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"log/slog"
 	"time"
+
+	"golang.org/x/exp/slog"
 
 	pb "T_invest_api/internal/gRPC_TInvest/proto"
 
@@ -49,7 +50,7 @@ func New() (*GRPCconn, error) {
 	ctx := context.Background()
 
 	log.Debug(
-		"gRPC connect params:",
+		"gRPC connect params",
 		slog.String("address", cfgGRPS_TInvest.SAddress),
 		slog.String("token", cfgGRPS_TInvest.Token),
 	)

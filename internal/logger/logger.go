@@ -1,8 +1,11 @@
 package logger
 
 import (
-	"log/slog"
+	"T_invest_api/internal/logger/handler/slogpretty"
+
 	"os"
+
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -16,12 +19,7 @@ func SetupLogger(env string) *slog.Logger {
 
 	switch env {
 	case envLocal:
-		log = slog.New(
-			slog.NewTextHandler(
-				os.Stdout,
-				&slog.HandlerOptions{Level: slog.LevelDebug},
-			),
-		)
+		log = setupPrettySlog()
 
 	case envDev:
 		log = slog.New(
@@ -48,4 +46,16 @@ func Err(err error) slog.Attr {
 		Key:   "error",
 		Value: slog.StringValue(err.Error()),
 	}
+}
+
+func setupPrettySlog() *slog.Logger {
+	opts := slogpretty.PrettyHandlerOptions{
+		SlogOpts: &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	}
+
+	handler := opts.NewPrettyHandler(os.Stdout)
+
+	return slog.New(handler)
 }

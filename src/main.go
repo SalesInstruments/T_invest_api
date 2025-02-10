@@ -2,15 +2,11 @@ package main
 
 import (
 	"T_invest_api/internal/config"
-	"T_invest_api/internal/http-server/handlers/url/bonds"
-	mvLoger "T_invest_api/internal/http-server/middleware/logger"
+	router "T_invest_api/internal/http-server/routes"
 	"T_invest_api/internal/logger"
 	"net/http"
 
-	"log/slog"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"golang.org/x/exp/slog"
 )
 
 var (
@@ -20,8 +16,11 @@ var (
 
 func main() {
 
-	log.Info("start T_invest_api", slog.String("env", cfg.Env))
-	log.Debug("debag messages are enable")
+	log.Info(
+		"start T_invest_api",
+		slog.String("env", cfg.Env),
+		slog.String("adress", cfg.HTTPServer.Address),
+	)
 
 	// storage, err := storage.New()
 	// if err != nil {
@@ -30,18 +29,18 @@ func main() {
 	// }
 	// _ = storage
 
-	router := chi.NewRouter()
+	// router := chi.NewRouter()
 
-	router.Use(middleware.RequestID)
-	router.Use(mvLoger.New(log))
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
+	// router.Use(middleware.RequestID)
+	// router.Use(mwLoger.New(log))
+	// router.Use(middleware.Recoverer)
+	// router.Use(middleware.URLFormat)
 
-	router.Post("/", bonds.New())
+	// router.Post("/", bonds.New())
 
 	srv := &http.Server{
 		Addr:         cfg.HTTPServer.Address,
-		Handler:      router,
+		Handler:      router.New(),
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
