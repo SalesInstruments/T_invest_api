@@ -6,7 +6,6 @@ import (
 	"T_invest_api/internal/logger"
 	"encoding/json"
 	"net/http"
-	"os"
 	// "github.com/tinkoff/invest-api-go-sdk/investgo"
 )
 
@@ -28,6 +27,7 @@ func New() http.HandlerFunc {
 		classCode := r.URL.Query().Get("classCode")
 
 		if ticker == "" || classCode == "" {
+			log.Error("Missing ticker or classCode")
 			http.Error(w, "Missing ticker or classCode", http.StatusBadRequest)
 			return
 		}
@@ -35,7 +35,7 @@ func New() http.HandlerFunc {
 		conn, err := grpctinvest.New()
 		if err != nil {
 			log.Error("Failed to create gRPC connection: ", logger.Err(err))
-			os.Exit(1)
+			http.Error(w, "Failed to create gRPC connection: ", http.StatusInternalServerError)
 		}
 		defer conn.Close()
 		defer conn.CancelFunc()
@@ -46,19 +46,16 @@ func New() http.HandlerFunc {
 		)
 		if err != nil {
 			log.Error("error receiving the tool", logger.Err(err))
+			http.Error(w, "error receiving the tool", http.StatusInternalServerError)
 		}
 
 		jsonResponse, err := json.Marshal(instrument)
 		if err != nil {
+			log.Error("Failed to marshal JSON", logger.Err(err))
 			http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-			// return nil, err
 		}
 
-		// return jsonResponse, nil
-
 		w.Header().Set("Content-Type", "application/json")
-
-		// Записываем JSON в тело ответа
 		w.WriteHeader(http.StatusOK)
 		w.Write(jsonResponse)
 
