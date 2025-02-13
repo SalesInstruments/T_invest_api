@@ -2,10 +2,10 @@ package router
 
 import (
 	"T_invest_api/internal/config"
-	"T_invest_api/internal/http-server/handlers/url/bonds"
+	"T_invest_api/internal/http-server/handlers/url/instrument"
+	marketdata "T_invest_api/internal/http-server/handlers/url/marketData"
 	mwLoger "T_invest_api/internal/http-server/middleware/logger"
 	"T_invest_api/internal/logger"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -38,13 +38,12 @@ func New() *Router {
 func (r *Router) appendRout() {
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
-			r.Get("/info", bonds.New())
+			r.Get("/shareBy", instrument.New())
+			r.Get("/getCandles", marketdata.New())
 		})
 
-		r.Route("/v2", func(r chi.Router) {
-			r.Get("/info", func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("API v2 Info"))
-			})
-		})
+		// r.Route("/v1", func(r chi.Router) {
+
+		// })
 	})
 }

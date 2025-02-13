@@ -22,22 +22,6 @@ func main() {
 		slog.String("adress", cfg.HTTPServer.Address),
 	)
 
-	// storage, err := storage.New()
-	// if err != nil {
-	// 	log.Error("failed to init storage", logger.Err(err))
-	// 	os.Exit(1)
-	// }
-	// _ = storage
-
-	// router := chi.NewRouter()
-
-	// router.Use(middleware.RequestID)
-	// router.Use(mwLoger.New(log))
-	// router.Use(middleware.Recoverer)
-	// router.Use(middleware.URLFormat)
-
-	// router.Post("/", bonds.New())
-
 	srv := &http.Server{
 		Addr:         cfg.HTTPServer.Address,
 		Handler:      router.New(),
