@@ -1,7 +1,7 @@
 package grpctinvest
 
 import (
-	"T_invest_api/internal/config"
+	g "T_invest_api/internal/globals"
 	"T_invest_api/internal/logger"
 	"context"
 	"crypto/tls"
@@ -12,12 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
-)
-
-var (
-	cfg             = config.MustLoad()
-	cfgGRPS_TInvest = cfg.GRPC_TInvest_server
-	log             = logger.SetupLogger(cfg.Env)
 )
 
 type GRPCconn struct {
@@ -31,27 +25,27 @@ func New() (*GRPCconn, error) {
 
 	ctx := context.Background()
 
-	log.Debug(
+	g.Log.Debug(
 		"gRPC connect params",
-		slog.String("address", cfgGRPS_TInvest.SAddress),
-		slog.String("token", cfgGRPS_TInvest.Token),
+		slog.String("address", g.CfgGRPS_TInvest.SAddress),
+		slog.String("token", g.CfgGRPS_TInvest.Token),
 	)
 
-	log.Info("try connect gRPC")
+	g.Log.Info("try connect gRPC")
 
 	creds := credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})
 	conn, err := grpc.NewClient(
-		cfgGRPS_TInvest.SAddress,
+		g.CfgGRPS_TInvest.SAddress,
 		grpc.WithTransportCredentials(creds),
 	)
 
 	if err != nil {
-		log.Error("did not connect: ", logger.Err(err))
+		g.Log.Error("did not connect: ", logger.Err(err))
 		return nil, err
 	}
-	log.Info(" connect gRPC")
+	g.Log.Info(" connect gRPC")
 
-	md := metadata.Pairs("authorization", "Bearer "+cfgGRPS_TInvest.Token)
+	md := metadata.Pairs("authorization", "Bearer "+g.CfgGRPS_TInvest.Token)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)

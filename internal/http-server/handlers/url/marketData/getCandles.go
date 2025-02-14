@@ -1,24 +1,12 @@
 package marketdata
 
 import (
-	"T_invest_api/internal/config"
 	grpctinvest "T_invest_api/internal/gRPC_TInvest"
+	g "T_invest_api/internal/globals"
 	"T_invest_api/internal/logger"
 	"encoding/json"
 	"net/http"
-	// "github.com/tinkoff/invest-api-go-sdk/investgo"
 )
-
-var (
-	cfg = config.MustLoad()
-	log = logger.SetupLogger(cfg.Env)
-)
-
-// type Request struct {
-// 	id_type
-// 	class_code string
-// 	id         string
-// }
 
 func New() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -27,45 +15,75 @@ func New() http.HandlerFunc {
 		classCode := r.URL.Query().Get("classCode")
 
 		if ticker == "" || classCode == "" {
-			log.Error("Missing ticker or classCode")
+			g.Log.Error("Missing ticker or classCode")
 			http.Error(w, "Missing ticker or classCode", http.StatusBadRequest)
 			return
 		}
 
-		conn, err := grpctinvest.New()
-		if err != nil {
-			log.Error("Failed to create gRPC connection: ", logger.Err(err))
-			http.Error(w, "Failed to create gRPC connection: ", http.StatusInternalServerError)
-		}
-		defer conn.Close()
-		defer conn.CancelFunc()
+		ch := make(chan struct {
+			response []byte
+			err      error
+		})
 
-		instrument, err := conn.ShareBy(
-			ticker,
-			classCode,
-		)
-		if err != nil {
-			log.Error("error receiving the tool", logger.Err(err))
-			http.Error(w, "error receiving the tool", http.StatusInternalServerError)
-		}
+		go func() {
+			defer close(ch)
 
-		candles, err := conn.GetCandles(
-			instrument.Instrument.Figi,
-		)
-		if err != nil {
-			log.Error("error receiving the candles", logger.Err(err))
-			http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-		}
+			conn, err := grpctinvest.New()
+			if err != nil {
+				g.Log.Error("Failed to create gRPC connection: ", logger.Err(err))
+				http.Error(w, "Failed to create gRPC connection: ", http.StatusInternalServerError)
+			}
+			defer conn.Close()
+			defer conn.CancelFunc()
 
-		jsonResponse, err := json.Marshal(candles)
-		if err != nil {
-			log.Error("Failed to marshal JSON", logger.Err(err))
-			http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
+			instrument, err := conn.ShareBy(
+				ticker,
+				classCode,
+			)
+			if err != nil {
+				ch <- struct {
+					response []byte
+					err      error
+				}{nil, err}
+				return
+			}
+
+			candles, err := conn.GetCandles(
+				instrument.Instrument.Figi,
+			)
+			if err != nil {
+				ch <- struct {
+					response []byte
+					err      error
+				}{nil, err}
+				return
+			}
+
+			jsonResponse, err := json.Marshal(candles)
+			if err != nil {
+				ch <- struct {
+					response []byte
+					err      error
+				}{nil, err}
+				return
+			}
+			ch <- struct {
+				response []byte
+				err      error
+			}{jsonResponse, nil}
+		}()
+
+		result := <-ch
+
+		if result.err != nil {
+			g.Log.Error("Error processing request", logger.Err(result.err))
+			http.Error(w, result.err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(jsonResponse)
+		w.Write(result.response)
 
 	}
 }

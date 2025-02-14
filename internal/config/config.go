@@ -12,7 +12,8 @@ type Config struct {
 	Env string `yaml:"env" env-default:"local" env-required:"true"`
 	// StoragePath string `yaml:"storage_path" env-required:"true"`
 	HTTPServer          `yaml:"http_server"`
-	PostgresDB          `yaml:"db"`
+	PostgresDB          `yaml:"postgres_db"`
+	RedisDB             `yaml:"redis_db"`
 	GRPC_TInvest_server `yaml:"gRPC_TInvest_server"`
 }
 
@@ -29,6 +30,16 @@ type PostgresDB struct {
 	Password string `yaml:"password"`
 	DBname   string `yaml:"dbname"`
 	SSLmode  string `yaml:"sslmode"`
+}
+
+type RedisDB struct {
+	Address     string        `yaml:"address"`
+	Password    string        `yaml:"password"`
+	Username    string        `yaml:"username"`
+	DB          int           `yaml:"db"`
+	MaxRetries  int           `yaml:"max_retries"`
+	DialTimeout time.Duration `yaml:"dial_timeout"`
+	Timeout     time.Duration `yaml:"timeout"`
 }
 
 type GRPC_TInvest_server struct {

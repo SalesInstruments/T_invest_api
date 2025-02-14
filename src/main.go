@@ -1,39 +1,33 @@
 package main
 
 import (
-	"T_invest_api/internal/config"
+	g "T_invest_api/internal/globals"
 	router "T_invest_api/internal/http-server/routes"
-	"T_invest_api/internal/logger"
 	"net/http"
 
 	"golang.org/x/exp/slog"
 )
 
-var (
-	cfg = config.MustLoad()
-	log = logger.SetupLogger(cfg.Env)
-)
-
 func main() {
 
-	log.Info(
+	g.Log.Info(
 		"start T_invest_api",
-		slog.String("env", cfg.Env),
-		slog.String("adress", cfg.HTTPServer.Address),
+		slog.String("env", g.Cfg.Env),
+		slog.String("adress", g.Cfg.HTTPServer.Address),
 	)
 
 	srv := &http.Server{
-		Addr:         cfg.HTTPServer.Address,
+		Addr:         g.Cfg.HTTPServer.Address,
 		Handler:      router.New(),
-		ReadTimeout:  cfg.HTTPServer.Timeout,
-		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+		ReadTimeout:  g.Cfg.HTTPServer.Timeout,
+		WriteTimeout: g.Cfg.HTTPServer.Timeout,
+		IdleTimeout:  g.Cfg.HTTPServer.IdleTimeout,
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
+		g.Log.Error("failed to start server")
 	}
 
-	log.Error("server stoped")
+	g.Log.Error("server stoped")
 
 }

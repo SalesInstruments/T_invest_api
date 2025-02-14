@@ -1,19 +1,13 @@
 package router
 
 import (
-	"T_invest_api/internal/config"
+	g "T_invest_api/internal/globals"
 	"T_invest_api/internal/http-server/handlers/url/instrument"
 	marketdata "T_invest_api/internal/http-server/handlers/url/marketData"
 	mwLoger "T_invest_api/internal/http-server/middleware/logger"
-	"T_invest_api/internal/logger"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-)
-
-var (
-	cfg = config.MustLoad()
-	log = logger.SetupLogger(cfg.Env)
 )
 
 type Router struct {
@@ -24,7 +18,7 @@ func New() *Router {
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
-	router.Use(mwLoger.New(log))
+	router.Use(mwLoger.New(g.Log))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 

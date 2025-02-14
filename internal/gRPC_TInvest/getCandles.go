@@ -2,6 +2,7 @@ package grpctinvest
 
 import (
 	pb "T_invest_api/internal/gRPC_TInvest/proto"
+	g "T_invest_api/internal/globals"
 	"T_invest_api/internal/logger"
 	"time"
 
@@ -44,9 +45,9 @@ func (grpcc *GRPCconn) GetCandles(figi string) (*pb.GetCandlesResponse, error) {
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok {
-			log.Error("gRPC error", slog.String("message", st.Message()), slog.Any("details", st.Details()))
+			g.Log.Error("gRPC error", slog.String("message", st.Message()), slog.Any("details", st.Details()))
 		} else {
-			log.Error("could not get candles", logger.Err(err))
+			g.Log.Error("could not get candles", logger.Err(err))
 		}
 		return nil, err
 	}

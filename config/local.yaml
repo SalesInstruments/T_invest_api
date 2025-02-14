@@ -1,11 +1,19 @@
 env: "local"
-db:
+postgres_db:
   host: "localhost"
   port: 5432
   username: "postgres"
   password: "2004"
   dbname: "T_invest_DB"
   sslmode: "disable"
+redis_db:
+  address: "localhost:6379"
+  password: "test1234"
+  user: "testuser"
+  db: 0
+  max_retries: 5
+  dial_timeout: 10s
+  timeout: 5s
 http_server:
   address: "localhost:8086"
   timeout: 4s
