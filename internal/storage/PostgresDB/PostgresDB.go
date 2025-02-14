@@ -39,7 +39,7 @@ func New() (*PostgresDB, error) {
 		return nil, err
 	}
 
-	g.Log.Info("successfully connected to the database")
+	g.Log.Info("successfully connected to the postgres database")
 
 	return &PostgresDB{db}, nil
 }
